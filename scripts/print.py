@@ -341,7 +341,7 @@ def get_table(directory, force=False):
 	else:
 		for sample in os.listdir(directory)[:]:
 			df = process_sample(sample, directory + '/' + sample)
-			data = pd.concat([data, df], ignore_index=True)
+			data = pd.concat([data, df], ignore_index=True,sort=True)
 
 	data = data.replace({'?': np.nan})
 	data = data.apply(lambda x: pd.to_numeric(x, errors='ignore'))
@@ -366,7 +366,7 @@ def get_table(directory, force=False):
 		func.update({c: np.min for c in ['status', 'd_status']})
 		combined = grouped.aggregate(func).reset_index()
 		combined['sample'] = combined['fullsample']
-		data = pd.concat([data, combined], ignore_index=True)
+		data = pd.concat([data, combined], ignore_index=True,sort=True)
 
 	for s in data['sample']:
 		mask = (data['sample'] == s)
@@ -441,12 +441,12 @@ if __name__ == '__main__':
 					dz = dy[(dy['sample'] == sample) & (dy['size'].notnull())]
 					f = np.nan
 					if len(dz) > 0: 
-						f = dz.ix[dz['threads'].argmin()][columns_top[i]]
+						f = dz.ix[dz['threads'].idxmin()][columns_top[i]]
 					print '{:,.0f}'.format(f / 1e6), '\t',
 					f = np.nan
 					if len(dz) > 0: 
-						f = dz.ix[dz['threads'].argmin()][columns[i]]
-						if i == 1 and dz.ix[dz['threads'].argmin()]['d_status'] != 1:
+						f = dz.ix[dz['threads'].idxmin()][columns[i]]
+						if i == 1 and dz.ix[dz['threads'].idxmin()]['d_status'] != 1:
 							f = np.nan
 					print '{:.2f}'.format(f), '\t',
 				print
@@ -479,14 +479,14 @@ if __name__ == '__main__':
 					dz = dy[(dy['sample'] == sample) & (dy['size'].notnull())]
 					f = np.nan
 					if len(dz) > 0: 
-						f = dz.ix[dz['threads'].argmin()][columns_top[i]]
+						f = dz.ix[dz['threads'].idxmin()][columns_top[i]]
 					if i == 0 or filetype == 'fastq':
 						print '{:,.0f}'.format(f / 1e6),  
 					print '\t',
 					f = np.nan
 					if len(dz) > 0: 
-						f = dz.ix[dz['threads'].argmin()][columns[i]]
-						if i == 1 and dz.ix[dz['threads'].argmin()]['d_status'] != 1:
+						f = dz.ix[dz['threads'].idxmin()][columns[i]]
+						if i == 1 and dz.ix[dz['threads'].idxmin()]['d_status'] != 1:
 							f = np.nan
 					print '{:.2f}'.format(f), '\t',
 				print
@@ -507,7 +507,7 @@ if __name__ == '__main__':
 				dz = dy[(dy['sample'] == sample) & (dy[mode].notnull())]
 				f, fr = np.nan, np.nan
 				if len(dz) > 0:
-					f = dz.ix[dz['threads'].argmin()][mode]
+					f = dz.ix[dz['threads'].idxmin()][mode]
 					fr = f / raw[raw['sample'] == sample][mode].iloc[0]
 				f /= 1e6
 				if f < 10:
@@ -543,7 +543,7 @@ if __name__ == '__main__':
 						f = np.nan
 						if len(dz[columns[i]]) > 0:
 							f = dz[columns[i]].iloc[0]
-							if i == 1 and dz.ix[dz['threads'].argmin()]['d_status'] != 1:
+							if i == 1 and dz.ix[dz['threads'].idxmin()]['d_status'] != 1:
 								f = np.nan
 						print '{:,.2f}'.format(f), '\t',
 				print
